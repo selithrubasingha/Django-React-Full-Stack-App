@@ -4,42 +4,46 @@ import Note from "../components/Note"
 import "../styles/Home.css"
 
 function Home() {
+    //gotta initialize them variables amr
     const [notes, setNotes] = useState([]);
     const [content, setContent] = useState("");
     const [title, setTitle] = useState("");
 
+    //when the cokmponent mounts run the. get notes function
     useEffect(() => {
         getNotes();
     }, []);
 
     const getNotes = () => {
         api
-            .get("/api/notes/")
-            .then((res) => res.data)
+            .get("/api/notes/") //get's all the model data in this url
+            .then((res) => res.data)//model is data let's say . then we target teh actual data using res.data
             .then((data) => {
-                setNotes(data);
+                setNotes(data); //and then get that data and display them!
                 console.log(data);
             })
             .catch((err) => alert(err));
     };
 
+    //to delete you gotta give the funtion a primary key or anything
     const deleteNote = (id) => {
         api
-            .delete(`/api/notes/delete/${id}/`)
-            .then((res) => {
+            .delete(`/api/notes/delete/${id}/`) //get the data from the url /
+            //then the deletion automatically happens in django 'cause of the DestroyApiView
+            .then((res) => { //the res returned is just a "did I do that ? or not ? kinda info"
                 if (res.status === 204) alert("Note deleted!");
                 else alert("Failed to delete note.");
-                getNotes();
+                getNotes(); //once it is deleted call getNotes again 'cause the ntoes are updated now 
             })
             .catch((error) => alert(error));
     };
 
     const createNote = (e) => {
-        e.preventDefault();
+        e.preventDefault(); //this prevents reloading the page which webbrowser does sometimes , we don't need that
         api
             .post("/api/notes/", { content, title })
             .then((res) => {
-                if (res.status === 201) alert("Note created!");
+                if (res.status === 201) alert("Note created!");//201 is the standard staus for "created"!
                 else alert("Failed to make note.");
                 getNotes();
             })
@@ -50,7 +54,7 @@ function Home() {
         <div>
             <div>
                 <h2>Notes</h2>
-                {notes.map((note) => (
+                {notes.map((note) => ( //The legendary mapping technique of the sage of Code.
                     <Note note={note} onDelete={deleteNote} key={note.id} />
                 ))}
             </div>
@@ -63,8 +67,7 @@ function Home() {
                     id="title"
                     name="title"
                     required
-                    onChange={(e) => setTitle(e.target.value)}
-                    value={title}
+                    onChange={(e) => setTitle(e.target.value)} //this changes the title from "" to what's types                    value={title}
                 />
                 <label htmlFor="content">Content:</label>
                 <br />
